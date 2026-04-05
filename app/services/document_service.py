@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, Depends
 from sqlalchemy.orm import Session
-from app.core.database import SessionLocal
+from app.core.database import SessionLocal, get_db
 from app.models.document import Document
 from app.utils.cloudinary_helper import upload_file
 from app.utils.chunking import chunk_text

@@ -1,3 +1,7 @@
+import redis
+
+r = redis.Redis(host='localhost', port=6379, db=0)
+
 def check_rate_limit(user_id):
     key = f"rate:{user_id}"
 
