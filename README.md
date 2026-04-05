@@ -4,133 +4,170 @@
 
 This project is a production-grade backend system that enables users to:
 
-* Upload documents (PDFs)
-* Ask questions based on document content
-* Generate contextual summaries
+- Upload documents (PDFs)
+- Process and index document content
+- Ask questions based on the document
+- Receive AI-generated contextual answers
 
-The system is inspired by tools like NotebookLM and implements a **Retrieval-Augmented Generation (RAG)** architecture.
+The system follows a **Retrieval-Augmented Generation (RAG)** architecture and is designed with **scalability, modularity, and performance** in mind.
 
 ---
 
-## 🧠 System Design
+## 🧠 Key Features
 
-### High-Level Architecture
+- 🔐 JWT-based Authentication
+- 📄 Document Upload & Processing Pipeline
+- 🧩 Text Chunking & Embedding Generation
+- 🔍 Semantic Search using Vector Similarity
+- 🤖 AI-powered Question Answering
+- ⚡ Caching using Redis
+- 🚦 Rate Limiting
+- 🧵 Background Job Processing (Celery)
+- 🐳 Dockerized Deployment
+- ☁️ Cloud File Storage
 
-Client → FastAPI → Services → Storage Layers → AI
+---
 
-```
-User
- ↓
-API Layer (FastAPI)
- ↓
+## 🏗️ System Architecture
+
+### High-Level Flow
+
+Client
+↓
+FastAPI (API Layer)
+↓
 Service Layer (Business Logic)
- ↓
+↓
 Repository Layer (DB Access)
- ↓
-Storage Systems
-```
+↓
+Storage Systems + AI
+
 
 ---
 
-## 🧱 Architecture Decisions
+### Layered Architecture
 
-### 1. Layered Architecture
+#### 1. API Layer
 
-The system follows a **clean architecture pattern**:
+Handles:
 
-* API Layer → handles HTTP
-* Service Layer → business logic
-* Repository Layer → DB abstraction
+- HTTP requests/responses
+- Input validation
+- Routing
 
-#### Why?
+#### 2. Service Layer
 
-* Separation of concerns
-* Testability
-* Scalability
+Handles:
 
----
+- Business logic
+- Document processing
+- AI interaction
 
-### 2. Multi-Storage Strategy
+#### 3. Repository Layer
 
-We intentionally use **different storage systems**:
+Handles:
 
-#### PostgreSQL
+- Database queries
+- Data persistence
 
-* Stores structured data (users, documents metadata)
-* Ensures relational integrity
+#### 4. Storage Layer
 
-#### Cloudinary
-
-* Stores uploaded files
-* Offloads file handling from backend
-
-#### FAISS
-
-* Stores embeddings
-* Enables semantic similarity search
-
-#### Redis
-
-* Used for:
-
-  * Caching responses
-  * Rate limiting
-
-#### Why?
-
-> “Use the right tool for the right job”
+| Component  | Purpose                  |
+|------------|--------------------------|
+| PostgreSQL | Structured metadata      |
+| Cloudinary | File storage             |
+| FAISS      | Vector similarity search |
+| Redis      | Cache + rate limiting    |
 
 ---
 
-### 3. Document Processing Pipeline
+## 🧱 Database Design
+
+### Users Table
+
+| Field    | Type   |
+|----------|--------|
+| id       | UUID   |
+| email    | String |
+| password | String |
+
+---
+
+### Documents Table
+
+| Field    | Type   |
+|----------|--------|
+| id       | UUID   |
+| user_id  | UUID   |
+| file_url | String |
+| status   | String |
+
+---
+
+## 🔐 Authentication
+
+- Uses JWT (JSON Web Tokens)
+- Stateless authentication model
+- Tokens include:
+  - user_id
+  - expiration time
+
+### Flow:
+
+1. User logs in  
+2. Token generated  
+3. Token used in protected routes  
+
+---
+
+## 📄 Document Processing Pipeline
 
 When a document is uploaded:
 
-1. File is uploaded to Cloudinary
-2. Metadata stored in PostgreSQL
-3. Text extracted from PDF
-4. Text is chunked into smaller parts
-5. Each chunk is converted into embeddings
-6. Stored in FAISS for retrieval
+1. File uploaded to Cloudinary  
+2. Metadata stored in PostgreSQL  
+3. PDF text extracted  
+4. Text split into chunks  
+5. Chunks converted into embeddings  
+6. Embeddings stored in FAISS  
 
 ---
 
-### 4. Query Pipeline (RAG)
+### Why Chunking?
 
-When user queries:
-
-1. Query → embedding
-2. Retrieve similar chunks from FAISS
-3. Construct prompt with context
-4. Send to LLM
-5. Return response
+- LLMs have token limits  
+- Improves semantic retrieval accuracy  
 
 ---
 
-## 🤖 AI Integration
+## 🤖 Query Processing (RAG)
 
-We use:
+When a user asks a question:
 
-* Embeddings → sentence-transformers
-* LLM → OpenAI API
-
-This follows a **Retrieval-Augmented Generation (RAG)** pattern.
+1. Query → embedding  
+2. Search similar chunks in FAISS  
+3. Select top-K results  
+4. Build context prompt  
+5. Send to LLM  
+6. Return response  
 
 ---
 
-## ⚡ Performance Optimizations
+## ⚡ Performance Optimization
 
-### Caching (Redis)
+### Redis Caching
 
-* Frequently asked queries cached
-* Reduces LLM cost and latency
+- Stores frequently asked queries  
+- Reduces response time  
+- Minimizes LLM API calls  
 
 ---
 
 ### Rate Limiting
 
-* Prevents API abuse
-* Protects system from overload
+- Limits API usage per user  
+- Prevents abuse  
+- Protects system resources  
 
 ---
 
@@ -138,64 +175,117 @@ This follows a **Retrieval-Augmented Generation (RAG)** pattern.
 
 Using Celery:
 
-* Document processing can be async
-* Prevents blocking API
+- Offloads heavy tasks  
+- Improves API responsiveness  
+
+### Example Tasks:
+
+- Document embedding generation  
+- Large file processing  
 
 ---
 
-## 🔐 Authentication
+## 🐳 Dockerization
 
-* JWT-based authentication
-* Stateless and scalable
+### Why Docker?
+
+- Environment consistency  
+- Easy deployment  
+- Scalable infrastructure  
 
 ---
 
-## 🐳 Deployment
+## 🚀 Deployment
 
-* Containerized using Docker
-* Deployed on Render
+Deployed using a cloud platform.
+
+### Steps:
+
+1. Push code to GitHub  
+2. Connect repository  
+3. Configure environment variables  
+4. Deploy service  
 
 ---
 
 ## 🧪 Testing
 
-* Integration tests using FastAPI TestClient
-* Covers authentication and AI endpoints
+- Integration testing using FastAPI TestClient  
+- Covers:
+  - Authentication  
+  - API endpoints  
+  - Basic flows  
 
 ---
 
 ## 🔧 Tech Stack
 
-* FastAPI
-* PostgreSQL
-* Redis
-* FAISS
-* Cloudinary
-* OpenAI API
-* Docker
-* Celery
+- FastAPI (Backend framework)  
+- PostgreSQL (Relational DB)  
+- Redis (Caching & rate limiting)  
+- FAISS (Vector search)  
+- Cloudinary (File storage)  
+- OpenAI API (LLM)  
+- Celery (Background jobs)  
+- Docker (Containerization)  
+
+---
+
+## 📁 Project Structure
+app/
+├── api/
+├── core/
+├── models/
+├── schemas/
+├── services/
+├── repositories/
+├── utils/
+├── workers/
+
+
+---
+
+## ⚠️ Edge Cases Handled
+
+- Large documents → async processing  
+- Invalid files → validation  
+- Failed embeddings → retry  
+- Duplicate uploads → can be extended  
 
 ---
 
 ## 📈 Future Improvements
 
-* Replace FAISS with distributed vector DB (e.g., Pinecone)
-* Add role-based access control
-* Implement streaming responses
-* Add observability (logs, metrics)
+- Distributed vector DB (e.g., Pinecone)  
+- Streaming responses  
+- Role-based access control  
+- Monitoring & logging  
+- Horizontal scaling  
 
 ---
 
 ## 🧠 Key Learnings
 
-* Designing scalable backend systems
-* Working with multiple storage systems
-* Implementing RAG pipelines
-* Handling async processing
-* Applying production best practices
+- Designing scalable backend systems  
+- Working with multi-storage architectures  
+- Implementing RAG pipelines  
+- Managing async workflows  
+- Applying clean architecture principles  
 
 ---
 
 ## 💡 Conclusion
 
-This project demonstrates how to build a scalable AI-powered backend system using modern backend architecture principles and tools.
+This project demonstrates how to build a scalable, modular, and production-ready backend system for AI-powered document understanding.
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, and feedback are welcome!
+
+---
+
+## 📬 Contact
+
+If you have ideas or feedback, feel free to reach out.
