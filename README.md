@@ -1,79 +1,90 @@
-# 📄 Document AI Backend 
+# 📄 Document AI Backend (Production-Grade)
 
 ## 🚀 Overview
 
 This project is a production-grade backend system that enables users to:
 
 - Upload documents (PDFs)
-- Ask questions based on document content
+- Process and index document content
+- Ask questions based on documents
+- Receive AI-generated contextual answers
 - Generate contextual summaries
 
-The system is inspired by tools like NotebookLM and implements a **Retrieval-Augmented Generation (RAG)** architecture.
+The system follows a **Retrieval-Augmented Generation (RAG)** architecture and is designed for **scalability, modularity, and performance**.
 
 ---
 
-## 🧠 System Design
+## 🧠 Key Features
 
-### High-Level Architecture
+- 🔐 JWT-based authentication
+- 📄 Document upload and processing pipeline
+- 🧩 Text chunking and embedding generation
+- 🔍 Semantic search using vector similarity
+- 🤖 AI-powered question answering
+- ⚡ Caching using Redis
+- 🚦 Rate limiting
+- 🧵 Background job processing with Celery
+- 🐳 Dockerized deployment
+- ☁️ Cloud file storage via Cloudinary
 
-Client → FastAPI → Services → Storage Layers → AI
+---
 
-User
+## 🏗️ System Architecture
+
+### High-Level Flow
+
+Client
 ↓
-API Layer (FastAPI)
+FastAPI (API Layer)
 ↓
 Service Layer (Business Logic)
 ↓
 Repository Layer (DB Access)
 ↓
-Storage Systems
-
+Storage Systems + AI
 
 ---
 
-## 🧱 Architecture Decisions
-
-### 1. Layered Architecture
+### Layered Architecture
 
 The system follows a **clean architecture pattern**:
 
-- API Layer → handles HTTP  
-- Service Layer → business logic  
-- Repository Layer → DB abstraction  
+- API Layer → handles HTTP, routing, and validation
+- Service Layer → business logic and AI orchestration
+- Repository Layer → database access and persistence
+- Storage Layer → file storage, embeddings, cache
 
 #### Why?
 
-- Separation of concerns  
-- Testability  
-- Scalability  
+- Separation of concerns
+- Testability
+- Scalability
 
 ---
 
-### 2. Multi-Storage Strategy
+## 🧱 Storage Strategy
 
-We intentionally use **different storage systems**:
+### PostgreSQL
 
-#### PostgreSQL
+- Stores structured data (users, document metadata)
+- Ensures relational integrity
 
-- Stores structured data (users, documents metadata)  
-- Ensures relational integrity  
+### Cloudinary
 
-#### Cloudinary
+- Stores uploaded files
+- Offloads file handling from the backend
 
-- Stores uploaded files  
-- Offloads file handling from backend  
+### FAISS
 
-#### FAISS
+- Stores embeddings
+- Enables semantic similarity search
 
-- Stores embeddings  
-- Enables semantic similarity search  
-
-#### Redis
+### Redis
 
 Used for:
 
-- Caching responses  
-- Rate limiting  
+- Caching responses
+- Rate limiting
 
 #### Why?
 
@@ -81,28 +92,28 @@ Used for:
 
 ---
 
-### 3. Document Processing Pipeline
+## 📄 Document Processing Pipeline
 
 When a document is uploaded:
 
-1. File is uploaded to Cloudinary  
-2. Metadata stored in PostgreSQL  
-3. Text extracted from PDF  
-4. Text is chunked into smaller parts  
-5. Each chunk is converted into embeddings  
-6. Stored in FAISS for retrieval  
+1. File is uploaded to Cloudinary
+2. Metadata is stored in PostgreSQL
+3. Text is extracted from the PDF
+4. Text is chunked into smaller parts
+5. Each chunk is converted into embeddings
+6. Embeddings are stored in FAISS for retrieval
 
 ---
 
-### 4. Query Pipeline (RAG)
+## 🔎 Query Pipeline (RAG)
 
-When user queries:
+When a user asks a question:
 
-1. Query → embedding  
-2. Retrieve similar chunks from FAISS  
-3. Construct prompt with context  
-4. Send to LLM  
-5. Return response  
+1. Query is converted into an embedding
+2. Retrieve similar chunks from FAISS
+3. Build a context prompt with top results
+4. Send the prompt to the LLM
+5. Return the answer
 
 ---
 
@@ -110,8 +121,8 @@ When user queries:
 
 We use:
 
-- Embeddings → sentence-transformers  
-- LLM → OpenAI API  
+- Embeddings via sentence-transformers
+- LLM via OpenAI API
 
 This follows a **Retrieval-Augmented Generation (RAG)** pattern.
 
@@ -121,15 +132,13 @@ This follows a **Retrieval-Augmented Generation (RAG)** pattern.
 
 ### Caching (Redis)
 
-- Frequently asked queries cached  
-- Reduces LLM cost and latency  
-
----
+- Frequently asked queries are cached
+- Reduces LLM cost and latency
 
 ### Rate Limiting
 
-- Prevents API abuse  
-- Protects system from overload  
+- Prevents API abuse
+- Protects system resources
 
 ---
 
@@ -137,64 +146,64 @@ This follows a **Retrieval-Augmented Generation (RAG)** pattern.
 
 Using Celery:
 
-- Document processing can be async  
-- Prevents blocking API  
+- Document processing can run asynchronously
+- Prevents blocking the API
 
 ---
 
 ## 🔐 Authentication
 
-- JWT-based authentication  
-- Stateless and scalable  
+- JWT-based authentication
+- Stateless and scalable
 
 ---
 
 ## 🐳 Deployment
 
-- Containerized using Docker  
-- Deployed on Render  
+- Containerized using Docker
+- Deployed on Render
 
 ---
 
 ## 🧪 Testing
 
-- Integration tests using FastAPI TestClient  
-- Covers authentication and AI endpoints  
+- Integration tests using FastAPI TestClient
+- Covers authentication and AI endpoints
 
 ---
 
 ## 🔧 Tech Stack
 
-- FastAPI  
-- PostgreSQL  
-- Redis  
-- FAISS  
-- Cloudinary  
-- OpenAI API  
-- Docker  
-- Celery  
+- FastAPI
+- PostgreSQL
+- Redis
+- FAISS
+- Cloudinary
+- OpenAI API
+- Docker
+- Celery
 
 ---
 
 ## 📈 Future Improvements
 
-- Replace FAISS with distributed vector DB (e.g., Pinecone)  
-- Add role-based access control  
-- Implement streaming responses  
-- Add observability (logs, metrics)  
+- Replace FAISS with a distributed vector DB (e.g., Pinecone)
+- Add role-based access control
+- Implement streaming responses
+- Add observability (logs, metrics)
 
 ---
 
 ## 🧠 Key Learnings
 
-- Designing scalable backend systems  
-- Working with multiple storage systems  
-- Implementing RAG pipelines  
-- Handling async processing  
-- Applying production best practices  
+- Designing scalable backend systems
+- Working with multiple storage systems
+- Implementing RAG pipelines
+- Managing async workflows
+- Applying production best practices
 
 ---
 
 ## 💡 Conclusion
 
-This project demonstrates how to build a scalable AI-powered backend system using modern backend architecture principles and tools.
+This project demonstrates how to build a scalable, modular, and production-ready backend system for AI-powered document understanding.
