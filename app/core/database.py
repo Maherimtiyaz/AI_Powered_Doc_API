@@ -9,7 +9,7 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False
     )
-
+print("DATABASE_URL:", DATABASE_URL)
 Base = declarative_base()
 
 def get_db():
