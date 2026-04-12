@@ -14,3 +14,14 @@ def get_db():
         yield db
     finally:
         db.close()
+
+## TEST SCRIPT 
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+DATABASE_URL = "your_db_url_here"
+
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
