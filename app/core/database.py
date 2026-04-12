@@ -4,6 +4,10 @@ from app.core.config import DATABASE_URL
 import os 
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+print("RAW DATABASE_URL:", repr(DATABASE_URL))
+
+DATABASE_URL = DATABASE_URL.strip() if DATABASE_URL else None
+
 
 engine = create_engine(DATABASE_URL)
 
@@ -12,7 +16,7 @@ SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False
     )
-print("DATABASE_URL:", DATABASE_URL)
+
 Base = declarative_base()
 
 def get_db():
