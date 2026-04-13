@@ -4,7 +4,11 @@ from app.core.config import DATABASE_URL
 import os 
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-print("RAW DATABASE_URL:", repr(DATABASE_URL))
+
+if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.strip().replace('"', '').replace("'", "")
+
+print("RAW DATABASE_URL:", DATABASE_URL)
 
 DATABASE_URL = DATABASE_URL.strip() if DATABASE_URL else None
 
