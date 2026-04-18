@@ -1,28 +1,121 @@
+from typing import List
+import numpy as np
+
 from app.utils.embeddings import get_embedding
-from app.utils.faiss_store import search
-from openai import OpenAI
+from app.utils.faiss_store import load_index
 from app.core.cache import get_cache, set_cache
 
-client = OpenAI()
 
-def answer_query(query):
+# -----------------------------
+# 🔹 Helper: Cosine Similarity
+# -----------------------------
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-    cached = get_cache(query)
+
+# -----------------------------
+# 🔹 Retrieve Relevant Chunks
+# -----------------------------
+def retrieve_chunks(query: str, file_id: str, top_k: int = 5):
+    """
+    1. Convert query to embedding
+    2. Search FAISS index
+    3. Return top matching chunks
+    """
+
+    query_vector = np.array(get_embedding(query)).astype("float32")
+
+    index, texts = load_index(file_id)
+
+    if index is None or texts is None:
+        raise ValueError("No index found for this document")
+
+    # FAISS search
+    distances, indices = index.search(np.array([query_vector]), top_k)
+
+    results = []
+    for idx in indices[0]:
+        if idx < len(texts):
+            results.append(texts[idx])
+
+    return results
+
+
+# -----------------------------
+# 🔹 Generate Answer (Simple)
+# -----------------------------
+def generate_answer(query: str, context_chunks: List[str]) -> str:
+    """
+    Simple answer generation (no LLM yet)
+    """
+
+    context = "\n\n".join(context_chunks)
+
+    answer = f"""
+Answer based on document:
+
+Query:
+{query}
+
+Relevant Information:
+{context[:1500]}  # limit output
+"""
+
+    return answer.strip()
+
+
+# -----------------------------
+# 🔹 Main Function
+# -----------------------------
+def answer_query(query: str, file_id: str):
+    """
+    Full pipeline:
+    1. Check cache
+    2. Retrieve chunks
+    3. Generate answer
+    4. Cache result
+    """
+
+    cache_key = f"{file_id}:{query}"
+
+    # -----------------------------
+    # 1. Check cache
+    # -----------------------------
+    cached = get_cache(cache_key)
     if cached:
-        return cached
+        return {
+            "answer": cached,
+            "source": "cache"
+        }
 
-    emb = get_embedding(query)
-    chunks = search(emb)
+    # -----------------------------
+    # 2. Retrieve chunks
+    # -----------------------------
+    try:
+        chunks = retrieve_chunks(query, file_id)
+    except Exception as e:
+        return {
+            "error": str(e)
+        }
 
-    prompt = f"Context: {chunks}\nQuestion: {query}"
+    if not chunks:
+        return {
+            "answer": "No relevant information found in document.",
+            "source": "search"
+        }
 
-    res = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
+    # -----------------------------
+    # 3. Generate answer
+    # -----------------------------
+    answer = generate_answer(query, chunks)
 
-    answer = res.choices[0].message.content
+    # -----------------------------
+    # 4. Cache result
+    # -----------------------------
+    set_cache(cache_key, answer)
 
-    set_cache(query, answer)
-
-    return answer
+    return {
+        "answer": answer,
+        "chunks_used": len(chunks),
+        "source": "generated"
+    }

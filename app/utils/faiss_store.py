@@ -1,13 +1,32 @@
 import faiss
-import numpy as np
+import pickle
+import os
 
-index = faiss.IndexFlatL2(384)
-data_store = []
+BASE_PATH = "faiss_indexes"
 
-def store_embeddings(chunks, embeddings):
+
+def store_embeddings(file_id, texts, embeddings):
+    os.makedirs(BASE_PATH, exist_ok=True)
+
+    dim = len(embeddings[0])
+    index = faiss.IndexFlatL2(dim)
+
     index.add(np.array(embeddings).astype("float32"))
-    data_store.extend(chunks)
 
-def search(query_embedding, k=5):
-    D, I = index.search(np.array([query_embedding]).astype("float32"), k)
-    return [data_store[i] for i in I[0]]
+    faiss.write_index(index, f"{BASE_PATH}/{file_id}.index")
+
+    with open(f"{BASE_PATH}/{file_id}.pkl", "wb") as f:
+        pickle.dump(texts, f)
+
+
+def load_index(file_id):
+    try:
+        index = faiss.read_index(f"{BASE_PATH}/{file_id}.index")
+
+        with open(f"{BASE_PATH}/{file_id}.pkl", "rb") as f:
+            texts = pickle.load(f)
+
+        return index, texts
+
+    except Exception:
+        return None, None

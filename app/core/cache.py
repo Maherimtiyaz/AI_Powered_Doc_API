@@ -7,3 +7,12 @@ def get_cache(key):
 
 def set_cache(key, value):
     r.setex(key, 300, value)
+
+
+cache = {}
+
+def get_cache(key):
+    return cache.get(key)
+
+def set_cache(key, value, ttl=None):
+    cache[key] = value

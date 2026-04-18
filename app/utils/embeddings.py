@@ -1,6 +1,9 @@
 from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+def get_embeddings(texts: list[str]) -> list:
+    return model.encode(texts).tolist()
 
 def get_embedding(text: str):
-    return [0.1] * 384
+    return get_embeddings([text])[0]
