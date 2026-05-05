@@ -18,7 +18,7 @@ from app.utils.cloudinary_helper import upload_file
 from app.utils.embeddings import get_embeddings
 from app.utils.faiss_store import store_embeddings
 
-from app.workers.worker import celery_app
+from app.core.celery_app import celery_app
 
 # -----------------------------
 # 🔹 Helper: Read PDF Content
@@ -60,7 +60,7 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]
 # -----------------------------
 # 🔹 Main Service Function
 # -----------------------------
-async def process_document(file: UploadFile, db: Session):
+async def process_document(file: UploadFile, db: Session, user_id: str):
     """
     Full pipeline:
     1. Save file locally
@@ -69,6 +69,7 @@ async def process_document(file: UploadFile, db: Session):
     4. Chunk text
     5. Generate embeddings
     6. Store in FAISS
+    7. Save to DB
     """
 
     # -----------------------------
@@ -132,17 +133,16 @@ async def process_document(file: UploadFile, db: Session):
         raise HTTPException(status_code=500, detail=f"FAISS storage failed: {str(e)}")
 
     # -----------------------------
-    # 8. (Optional) Save metadata to DB
+    # 8. Save metadata to DB
     # -----------------------------
-    # Example (if you have model):
-    #
-    # document = Document(
-    #     id=file_id,
-    #     filename=file.filename,
-    #     file_url=cloudinary_url
-    # )
-    # db.add(document)
-    # db.commit()
+    document = Document(
+        id=file_id,
+        user_id=user_id,
+        file_url=cloudinary_url,
+        status="processed"
+    )
+    db.add(document)
+    db.commit()
 
     # -----------------------------
     # 9. Cleanup
@@ -164,8 +164,8 @@ async def process_document(file: UploadFile, db: Session):
     }
 
 
-@celery_app.task(bind=True, autoretry_for=(Exception,), retry_backoff=5, retry_kwargs={"max_retries": 3})
-def process_document(self, file_url: str):
+@celery_app.task(bind=True, autoretry_for=(Exception,), retry_backoff=5, retry_kwargs={"max_retries": 3}, name="process_document_task")
+def process_document_task(self, file_url: str):
     try:
         # Download file
         response = requests.get(file_url)

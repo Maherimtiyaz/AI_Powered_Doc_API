@@ -46,20 +46,12 @@ def retrieve_chunks(query: str, file_id: str, top_k: int = 5):
 # -----------------------------
 def generate_answer(query: str, context_chunks: List[str]) -> str:
     """
-    Simple answer generation (no LLM yet)
+    Mock LLM generation based on context.
     """
 
     context = "\n\n".join(context_chunks)
 
-    answer = f"""
-Answer based on document:
-
-Query:
-{query}
-
-Relevant Information:
-{context[:1500]}  # limit output
-"""
+    answer = f"Based on the document context, here is the answer to your query: '{query}'.\n\nI found {len(context_chunks)} relevant chunks of information. The most relevant text says:\n\n\"{context[:300]}...\"\n\n(This is a mock AI response simulated using local chunk retrieval without incurring external API costs.)"
 
     return answer.strip()
 

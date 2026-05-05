@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException
 from jose import jwt
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
-from app.core.config import SECRET_KEY, ALGORITHM
+from app.core.security import SECRET, ALGO
 from app.models.user import User
 
 def get_db():
@@ -14,7 +14,7 @@ def get_db():
 
 def get_current_user(token: str, db: Session = Depends(get_db)):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET, algorithms=[ALGO])
         user = db.query(User).filter(User.id == payload["user_id"]).first()
         return user
     except:

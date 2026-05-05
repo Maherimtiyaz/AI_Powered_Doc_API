@@ -1,6 +1,7 @@
 import faiss
 import pickle
 import os
+import numpy as np
 
 BASE_PATH = "faiss_indexes"
 

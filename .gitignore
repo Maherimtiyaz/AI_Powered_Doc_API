@@ -4,3 +4,10 @@ venv/
 *.pyc
 .pytest_cache/
 *.log
+
+# Plan & Task Documentation (Local Only - Not Pushed)
+masterplan.md
+projectarchitecture.md
+tasks.md
+TASK_REPORTS.md
+.DS_Store

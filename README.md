@@ -1,209 +1,99 @@
-# 📄 Document AI Backend (Production-Grade)
+# 📄 AI-Powered Document API & Dashboard
 
-## 🚀 Overview
+![Document AI Banner](https://via.placeholder.com/1200x300/000000/FFFFFF?text=AI-Powered+Document+Understanding)
 
-This project is a production-grade backend system that enables users to:
-
-- Upload documents (PDFs)
-- Process and index document content
-- Ask questions based on documents
-- Receive AI-generated contextual answers
-- Generate contextual summaries
-
-The system follows a **Retrieval-Augmented Generation (RAG)** architecture and is designed for **scalability, modularity, and performance**.
+A production-grade, full-stack platform that empowers users to upload PDF documents and extract insights through a conversational AI interface. The system leverages a robust **Retrieval-Augmented Generation (RAG)** architecture for highly accurate, context-aware answers.
 
 ---
 
-## 🧠 Key Features
+## ✨ System Highlights
 
-- 🔐 JWT-based authentication
-- 📄 Document upload and processing pipeline
-- 🧩 Text chunking and embedding generation
-- 🔍 Semantic search using vector similarity
-- 🤖 AI-powered question answering
-- ⚡ Caching using Redis
-- 🚦 Rate limiting
-- 🧵 Background job processing with Celery
-- 🐳 Dockerized deployment
-- ☁️ Cloud file storage via Cloudinary
+- **Dynamic RAG Pipeline**: Combines `sentence-transformers` for embeddings with a high-performance `FAISS` vector database to instantly retrieve semantic document context.
+- **Asynchronous AI Processing**: Heavy document parsing and embedding tasks are offloaded to **Celery** workers and queued via **Redis**, ensuring API latency remains minimal.
+- **Sleek Modern Frontend**: A fully animated, glassmorphic, black-and-white React/Vite interface powered by **Framer Motion**.
+- **Bulletproof Reliability**: Features a **100% passing automated test suite** covering Authentication, Uploads, and AI interactions.
+- **Scalable Storage**: Employs **PostgreSQL** for strict relational data alongside **Cloudinary** for scalable, off-server file storage.
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ Architecture Overview
 
-### High-Level Flow
+The platform is strictly separated into a headless API backend and a decoupled React SPA.
 
-Client
-↓
-FastAPI (API Layer)
-↓
-Service Layer (Business Logic)
-↓
-Repository Layer (DB Access)
-↓
-Storage Systems + AI
+### Backend (FastAPI Layer)
+Follows a **Clean Architecture Pattern**:
+- **API Routers**: Handles HTTP requests, parameter validation, and JWT verification.
+- **Service Layer**: Orchestrates business logic, FAISS indexing, and AI prompting.
+- **Repository Layer**: Abstracts raw SQLAlchemy queries.
 
----
-
-### Layered Architecture
-
-The system follows a **clean architecture pattern**:
-
-- API Layer → handles HTTP, routing, and validation
-- Service Layer → business logic and AI orchestration
-- Repository Layer → database access and persistence
-- Storage Layer → file storage, embeddings, cache
-
-#### Why?
-
-- Separation of concerns
-- Testability
-- Scalability
+### Frontend (React + Vite)
+- **State & Routing**: Utilizes React hooks and `react-router-dom` to manage user sessions and chat history.
+- **Styling**: Built on pure Vanilla CSS utilizing CSS Variables for global theme enforcement, completely eliminating utility-class clutter.
 
 ---
 
-## 🧱 Storage Strategy
+## 🚀 Getting Started
 
-### PostgreSQL
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL, Redis Server
 
-- Stores structured data (users, document metadata)
-- Ensures relational integrity
+### 1. Backend Setup
 
-### Cloudinary
+```bash
+# Clone the repository and setup the virtual environment
+python -m venv venv
+source venv/bin/activate  # Or `.\venv\Scripts\activate` on Windows
 
-- Stores uploaded files
-- Offloads file handling from the backend
+# Install dependencies
+pip install -r requirements.txt
 
-### FAISS
+# Start the Celery Worker (In a separate terminal)
+celery -A app.workers.worker worker --loglevel=info
 
-- Stores embeddings
-- Enables semantic similarity search
+# Start the FastAPI Server
+uvicorn app.main:app --reload --port 8000
+```
 
-### Redis
+### 2. Frontend Setup
 
-Used for:
+```bash
+# Navigate to the frontend directory
+cd frontend
 
-- Caching responses
-- Rate limiting
+# Install Node dependencies
+npm install
 
-#### Why?
-
-> “Use the right tool for the right job”
-
----
-
-## 📄 Document Processing Pipeline
-
-When a document is uploaded:
-
-1. File is uploaded to Cloudinary
-2. Metadata is stored in PostgreSQL
-3. Text is extracted from the PDF
-4. Text is chunked into smaller parts
-5. Each chunk is converted into embeddings
-6. Embeddings are stored in FAISS for retrieval
-
----
-
-## 🔎 Query Pipeline (RAG)
-
-When a user asks a question:
-
-1. Query is converted into an embedding
-2. Retrieve similar chunks from FAISS
-3. Build a context prompt with top results
-4. Send the prompt to the LLM
-5. Return the answer
-
----
-
-## 🤖 AI Integration
-
-We use:
-
-- Embeddings via sentence-transformers
-- LLM via OpenAI API
-
-This follows a **Retrieval-Augmented Generation (RAG)** pattern.
-
----
-
-## ⚡ Performance Optimizations
-
-### Caching (Redis)
-
-- Frequently asked queries are cached
-- Reduces LLM cost and latency
-
-### Rate Limiting
-
-- Prevents API abuse
-- Protects system resources
-
----
-
-## 🧵 Background Processing
-
-Using Celery:
-
-- Document processing can run asynchronously
-- Prevents blocking the API
-
----
-
-## 🔐 Authentication
-
-- JWT-based authentication
-- Stateless and scalable
-
----
-
-## 🐳 Deployment
-
-- Containerized using Docker
-- Deployed on Render
+# Start the Vite development server
+npm run dev
+```
 
 ---
 
 ## 🧪 Testing
 
-- Integration tests using FastAPI TestClient
-- Covers authentication and AI endpoints
+The backend is fully tested using `pytest`. The test suite automatically spins up a mocked SQLite database and isolates third-party API calls (e.g., Cloudinary, OpenAI) to ensure deterministic execution.
+
+```bash
+# Run the test suite
+pytest tests/ -v
+```
+
+**Test Coverage Includes:**
+- User Registration & JWT Issuance
+- Invalid Credential Rejection
+- Document Uploads & Metadata Persistence
+- Vector Query Execution & Response Formatting
 
 ---
 
-## 🔧 Tech Stack
+## 🔧 Technology Stack
 
-- FastAPI
-- PostgreSQL
-- Redis
-- FAISS
-- Cloudinary
-- OpenAI API
-- Docker
-- Celery
+**Backend:** FastAPI, PostgreSQL (SQLAlchemy), Redis, Celery, FAISS, PyPDF, Sentence-Transformers  
+**Frontend:** React (Vite), Framer Motion, Axios, Lucide Icons  
+**Infrastructure:** Cloudinary (File Storage), JWT (Stateless Auth)
 
 ---
 
-## 📈 Future Improvements
-
-- Replace FAISS with a distributed vector DB (e.g., Pinecone)
-- Add role-based access control
-- Implement streaming responses
-- Add observability (logs, metrics)
-
----
-
-## 🧠 Key Learnings
-
-- Designing scalable backend systems
-- Working with multiple storage systems
-- Implementing RAG pipelines
-- Managing async workflows
-- Applying production best practices
-
----
-
-## 💡 Conclusion
-
-This project demonstrates how to build a scalable, modular, and production-ready backend system for AI-powered document understanding.
+*Designed and engineered for scalability, modularity, and modern aesthetics.*

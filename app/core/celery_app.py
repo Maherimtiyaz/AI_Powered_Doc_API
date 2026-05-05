@@ -11,4 +11,4 @@ celery_app = Celery(
 
 import app.tasks.document_tasks
 
-celery_app.autodiscover_tasks(["app.tasks"])
+celery_app.autodiscover_tasks(["app.tasks", "app.services"])
