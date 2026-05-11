@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, FileText, Bot, Zap, Shield } from 'lucide-react';
+import { ArrowRight, FileText, Bot, Zap, Shield, Check } from 'lucide-react';
 
 const Sparkles = ({ size, style }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
@@ -105,6 +105,90 @@ export default function Landing() {
             <p style={{ color: '#888', margin: 0 }}>{feat.desc}</p>
           </motion.div>
         ))}
+      </div>
+
+      {/* Pricing Section */}
+      <div id="pricing" style={{ maxWidth: '1000px', margin: '0 auto 8rem', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 10 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          style={{ textAlign: 'center', marginBottom: '4rem' }}
+        >
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '1rem' }}>Simple, transparent pricing</h2>
+          <p style={{ color: '#888', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>
+            Powerful AI document analysis at a fraction of the market cost.
+          </p>
+        </motion.div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', width: '100%' }}>
+          {/* Basic Plan */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column' }}
+          >
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>Starter</h3>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem', marginBottom: '2rem' }}>
+              <span style={{ fontSize: '3rem', fontWeight: 700 }}>$4.99</span>
+              <span style={{ color: '#888' }}>/month</span>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+              {[
+                'Up to 50 documents/month',
+                '10MB maximum file size',
+                'Standard query speed',
+                'GPT-4o-mini access',
+                'Community support'
+              ].map((feature, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#ccc' }}>
+                  <Check size={18} color="#fff" />
+                  <span style={{ fontSize: '0.95rem' }}>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <button className="btn btn-ghost" style={{ width: '100%', padding: '1rem', borderRadius: '12px' }} onClick={() => navigate('/login')}>
+              Start Starter
+            </button>
+          </motion.div>
+
+          {/* Pro Plan */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            style={{ padding: '2.5rem', background: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '24px', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', position: 'relative' }}
+          >
+            <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#fff', color: '#000', padding: '0.25rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em' }}>
+              MOST POPULAR
+            </div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>Pro</h3>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem', marginBottom: '2rem' }}>
+              <span style={{ fontSize: '3rem', fontWeight: 700 }}>$9.99</span>
+              <span style={{ color: '#888' }}>/month</span>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+              {[
+                'Unlimited documents',
+                '50MB maximum file size',
+                'Priority lightning speed',
+                'GPT-4o & GPT-4o-mini access',
+                'Premium 24/7 support'
+              ].map((feature, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#ccc' }}>
+                  <Check size={18} color="#fff" />
+                  <span style={{ fontSize: '0.95rem' }}>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <button className="btn btn-primary" style={{ width: '100%', padding: '1rem', borderRadius: '12px' }} onClick={() => navigate('/login')}>
+              Start Pro
+            </button>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
