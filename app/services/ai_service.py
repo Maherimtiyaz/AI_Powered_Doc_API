@@ -4,6 +4,8 @@ import numpy as np
 from app.utils.embeddings import get_embedding
 from app.utils.faiss_store import load_index
 from app.core.cache import get_cache, set_cache
+from app.core.config import OPENAI_API_KEY
+from openai import OpenAI
 
 
 # -----------------------------
@@ -46,14 +48,27 @@ def retrieve_chunks(query: str, file_id: str, top_k: int = 5):
 # -----------------------------
 def generate_answer(query: str, context_chunks: List[str]) -> str:
     """
-    Mock LLM generation based on context.
+    Generate an answer using OpenAI based on context.
     """
+    if not OPENAI_API_KEY:
+        return "Error: OPENAI_API_KEY is not configured in the environment."
 
     context = "\n\n".join(context_chunks)
-
-    answer = f"Based on the document context, here is the answer to your query: '{query}'.\n\nI found {len(context_chunks)} relevant chunks of information. The most relevant text says:\n\n\"{context[:300]}...\"\n\n(This is a mock AI response simulated using local chunk retrieval without incurring external API costs.)"
-
-    return answer.strip()
+    
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that answers questions based ONLY on the provided document context. If the answer cannot be found in the context, clearly state that."},
+                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
+            ],
+            temperature=0.3
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error communicating with OpenAI API: {str(e)}"
 
 
 # -----------------------------
