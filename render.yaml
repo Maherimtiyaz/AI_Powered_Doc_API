@@ -1,14 +1,49 @@
+databases:
+  - name: doc-ai-db
+    plan: free
+
 services:
   - type: web
-    name: doc-ai
+    name: doc-ai-backend
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
     plan: free
+    region: oregon
+    healthCheckPath: /
     envVars:
       - key: DATABASE_URL
-        value: your_db_url
+        fromDatabase:
+          name: doc-ai-db
+          property: connectionString
       - key: SECRET_KEY
-        value: your_secret
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
       - key: OPENAI_API_KEY
-        value: your_key
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+          type: static
+          name: doc-ai-frontend
+          property: url
+      - key: PYTHON_VERSION
+        value: 3.10.0
+
+  - type: static
+    name: doc-ai-frontend
+    runtime: node
+    buildCommand: cd frontend && npm install && npm run build
+    publishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: doc-ai-backend
+          property: url

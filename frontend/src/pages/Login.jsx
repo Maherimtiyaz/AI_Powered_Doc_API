@@ -3,10 +3,10 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-mo
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Cpu, Eye, EyeOff, ArrowRight, Sparkles, Shield, Zap
+  Hexagon, Eye, EyeOff, ArrowRight, Sparkles, Shield, Zap
 } from 'lucide-react';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ── 3D Tilt Card Hook ──
 function useTilt() {
@@ -207,14 +207,12 @@ export default function Login() {
               style={{ display: 'inline-block', marginBottom: '1rem' }}
             >
               <div style={{
-                width: 60, height: 60,
-                background: 'linear-gradient(135deg, #ffffff, #aaaaaa)',
-                borderRadius: '16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 margin: '0 auto',
-                boxShadow: '0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(255,255,255,0.1)',
+                color: '#fff',
+                filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.3))'
               }}>
-                <Cpu size={28} color="#000" />
+                <Hexagon size={48} strokeWidth={2} />
               </div>
             </motion.div>
 

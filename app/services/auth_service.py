@@ -12,7 +12,7 @@ def authenticate_user(db: Session, email: str, password: str):
         return None
 
     # Verify password
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password):
         return None
 
     return user

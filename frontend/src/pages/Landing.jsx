@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, FileText, Bot, Zap, Shield, Check } from 'lucide-react';
+import { ArrowRight, Hexagon, Bot, Zap, Shield, Check } from 'lucide-react';
 
 const Sparkles = ({ size, style }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
@@ -25,8 +25,8 @@ export default function Landing() {
           animate={{ opacity: 1, x: 0 }}
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700, fontSize: '1.25rem' }}
         >
-          <div style={{ width: 36, height: 36, background: '#fff', color: '#000', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FileText size={20} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+            <Hexagon size={28} strokeWidth={2.5} />
           </div>
           DocAI
         </motion.div>

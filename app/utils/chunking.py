@@ -1,2 +1,17 @@
-def chunk_text(text, size=500):
-    return [text[i:i+size] for i in range(0, len(text), size)]
+from typing import List
+
+def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]:
+    """
+    Split text into chunks of chunk_size with given overlap.
+    """
+    chunks = []
+    start = 0
+
+    while start < len(text):
+        end = start + chunk_size
+        chunk = text[start:end]
+        chunks.append(chunk)
+
+        start += chunk_size - overlap
+
+    return chunks

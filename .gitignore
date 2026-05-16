@@ -14,3 +14,6 @@ TASK_REPORTS.md
 
 test.db
 faiss_indexes/
+temp_uploads/
+implementation_plan.md
+.env.example

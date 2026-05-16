@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Upload, LogOut, MessageSquare, FileText, Send,
-  Cpu, CheckCircle, AlertCircle, Loader2, Trash2, ChevronRight, Bot, User
+  Hexagon, CheckCircle, AlertCircle, Loader2, Trash2, ChevronRight, Bot, User
 } from 'lucide-react';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function ThinkingDots() {
   return (
@@ -129,12 +129,10 @@ export default function Dashboard() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{
-              width: 40, height: 40, borderRadius: '10px',
-              background: '#ffffff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 20px rgba(255,255,255,0.2)',
+              color: '#fff'
             }}>
-              <Cpu size={20} color="#000" />
+              <Hexagon size={32} strokeWidth={2.5} />
             </div>
             <div>
               <h1 className="gradient-text" style={{ fontSize: '1.25rem', margin: 0, lineHeight: 1 }}>DocAI</h1>

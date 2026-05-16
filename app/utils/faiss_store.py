@@ -3,7 +3,8 @@ import pickle
 import os
 import numpy as np
 
-BASE_PATH = "faiss_indexes"
+# Note: Render's free tier uses ephemeral disk. FAISS indexes will be lost on redeploy.
+BASE_PATH = os.getenv("FAISS_BASE_PATH", "faiss_indexes")
 
 
 def store_embeddings(file_id, texts, embeddings):

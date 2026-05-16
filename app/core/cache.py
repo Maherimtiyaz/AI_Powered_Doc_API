@@ -1,13 +1,8 @@
-import redis
-
-r = redis.Redis(host="localhost", port=6379)
-
-def get_cache(key):
-    return r.get(key)
-
-def set_cache(key, value):
-    r.setex(key, 300, value)
-
+# -----------------------------
+# 🔹 In-Memory Cache
+# -----------------------------
+# Simple dict-based cache. Suitable for single-instance deployments.
+# For multi-instance, replace with Redis or similar.
 
 cache = {}
 

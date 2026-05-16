@@ -6,7 +6,6 @@ from app.utils.chunking import chunk_text
 
 import os
 import uuid
-import requests
 from typing import List
 
 from fastapi import UploadFile, HTTPException
@@ -18,7 +17,6 @@ from app.utils.cloudinary_helper import upload_file
 from app.utils.embeddings import get_embeddings
 from app.utils.faiss_store import store_embeddings
 
-from app.core.celery_app import celery_app
 
 # -----------------------------
 # 🔹 Helper: Read PDF Content
@@ -40,21 +38,6 @@ def extract_text_from_pdf(file_path: str) -> str:
         raise HTTPException(status_code=400, detail=f"PDF parsing failed: {str(e)}")
 
 
-# -----------------------------
-# 🔹 Helper: Chunk Text
-# -----------------------------
-def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]:
-    chunks = []
-    start = 0
-
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end]
-        chunks.append(chunk)
-
-        start += chunk_size - overlap
-
-    return chunks
 
 
 # -----------------------------
@@ -162,24 +145,3 @@ async def process_document(file: UploadFile, db: Session, user_id: str):
         "chunks": len(chunks),
         "message": "Document processed successfully"
     }
-
-
-@celery_app.task(bind=True, autoretry_for=(Exception,), retry_backoff=5, retry_kwargs={"max_retries": 3}, name="process_document_task")
-def process_document_task(self, file_url: str):
-    try:
-        # Download file
-        response = requests.get(file_url)
-
-        if response.status_code != 200:
-            raise Exception("Failed to download file")
-
-        content = response.content
-
-        # Simulate processing
-        text = content[:100]
-
-        return {"status": "success", "length": len(text)}
-
-    except Exception as e:
-        print(f"Error processing document: {str(e)}")
-        raise e

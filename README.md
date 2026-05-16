@@ -9,26 +9,23 @@ A production-grade, full-stack platform that empowers users to upload PDF docume
 ## ✨ System Highlights
 
 - **Dynamic RAG Pipeline**: Combines `sentence-transformers` for embeddings with a high-performance `FAISS` vector database to instantly retrieve semantic document context.
-- **Asynchronous AI Processing**: Heavy document parsing and embedding tasks are offloaded to **Celery** workers and queued via **Redis**, ensuring API latency remains minimal.
-- **Sleek Modern Frontend**: A fully animated, glassmorphic, black-and-white React/Vite interface powered by **Framer Motion**.
-- **Bulletproof Reliability**: Features a **100% passing automated test suite** covering Authentication, Uploads, and AI interactions.
-- **Scalable Storage**: Employs **PostgreSQL** for strict relational data alongside **Cloudinary** for scalable, off-server file storage.
+- **Instant AI Integration**: Powered by OpenAI's `gpt-4o-mini` for fast and accurate responses based ONLY on the provided document context.
+- **Sleek Modern Frontend**: A fully animated, glassmorphic React/Vite interface powered by **Framer Motion** and **Lucide Icons**.
+- **Security First**: JWT-based authentication ensures your documents and queries remain private.
+- **Scalable Infrastructure**: Built to deploy on **Render** with managed PostgreSQL and Cloudinary for file storage.
 
 ---
 
 ## 🏗️ Architecture Overview
 
-The platform is strictly separated into a headless API backend and a decoupled React SPA.
-
-### Backend (FastAPI Layer)
-Follows a **Clean Architecture Pattern**:
-- **API Routers**: Handles HTTP requests, parameter validation, and JWT verification.
-- **Service Layer**: Orchestrates business logic, FAISS indexing, and AI prompting.
-- **Repository Layer**: Abstracts raw SQLAlchemy queries.
+### Backend (FastAPI)
+- **High Performance**: Built with FastAPI for speed and async support.
+- **Vector Search**: Local FAISS indexing for semantic retrieval.
+- **Authentication**: JWT-secured endpoints for users and document management.
 
 ### Frontend (React + Vite)
-- **State & Routing**: Utilizes React hooks and `react-router-dom` to manage user sessions and chat history.
-- **Styling**: Built on pure Vanilla CSS utilizing CSS Variables for global theme enforcement, completely eliminating utility-class clutter.
+- **Animated UI**: Smooth transitions and 3D effects using Framer Motion.
+- **Responsive Design**: Works on mobile and desktop.
 
 ---
 
@@ -37,20 +34,17 @@ Follows a **Clean Architecture Pattern**:
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- PostgreSQL, Redis Server
+- PostgreSQL (Local or Render Managed)
 
 ### 1. Backend Setup
 
 ```bash
 # Clone the repository and setup the virtual environment
 python -m venv venv
-source venv/bin/activate  # Or `.\venv\Scripts\activate` on Windows
+.\venv\Scripts\activate  # Windows
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Start the Celery Worker (In a separate terminal)
-celery -A app.workers.worker worker --loglevel=info
 
 # Start the FastAPI Server
 uvicorn app.main:app --reload --port 8000
@@ -73,26 +67,20 @@ npm run dev
 
 ## 🧪 Testing
 
-The backend is fully tested using `pytest`. The test suite automatically spins up a mocked SQLite database and isolates third-party API calls (e.g., Cloudinary, OpenAI) to ensure deterministic execution.
+The backend includes a comprehensive suite of integration tests.
 
 ```bash
 # Run the test suite
 pytest tests/ -v
 ```
 
-**Test Coverage Includes:**
-- User Registration & JWT Issuance
-- Invalid Credential Rejection
-- Document Uploads & Metadata Persistence
-- Vector Query Execution & Response Formatting
-
 ---
 
 ## 🔧 Technology Stack
 
-**Backend:** FastAPI, PostgreSQL (SQLAlchemy), Redis, Celery, FAISS, PyPDF, Sentence-Transformers  
+**Backend:** FastAPI, PostgreSQL (SQLAlchemy), FAISS, OpenAI, PyPDF, Sentence-Transformers  
 **Frontend:** React (Vite), Framer Motion, Axios, Lucide Icons  
-**Infrastructure:** Cloudinary (File Storage), JWT (Stateless Auth)
+**Infrastructure:** Cloudinary (File Storage), Render (Full-stack Hosting)
 
 ---
 
