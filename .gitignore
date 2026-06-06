@@ -12,8 +12,8 @@ tasks.md
 TASK_REPORTS.md
 .DS_Store
 
-test.db
+*.db
+sample.pdf
 faiss_indexes/
 temp_uploads/
 implementation_plan.md
-.env.example
