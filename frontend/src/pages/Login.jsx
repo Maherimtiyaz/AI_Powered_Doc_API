@@ -6,7 +6,7 @@ import {
   Hexagon, Eye, EyeOff, ArrowRight, Sparkles, Shield, Zap
 } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://ai-powered-doc-api.onrender.com';
 
 // ── 3D Tilt Card Hook ──
 function useTilt() {
