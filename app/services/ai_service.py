@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 
 from app.utils.embeddings import get_embedding
-from app.utils.vector_store import load_index
+from app.utils.vector_store_model import load_index
 from app.core.cache import get_cache, set_cache
 from app.core.config import OPENAI_API_KEY
 from openai import OpenAI
