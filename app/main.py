@@ -5,6 +5,8 @@ from app.api.auth_routes import router as auth_router
 from app.api.document_auth import router as document_router
 from app.api.ai_routes import router as ai_router
 from app.core.database import Base, engine
+from app.utils.vector_store_model import DocumentChunk  # import so table is registered
+
 
 # Create tables
 Base.metadata.create_all(bind=engine)

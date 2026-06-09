@@ -15,7 +15,8 @@ from pypdf import PdfReader
 
 from app.utils.cloudinary_helper import upload_file
 from app.utils.embeddings import get_embeddings
-from app.utils.faiss_store import store_embeddings
+from app.utils.vector_store_model import store_embeddings
+
 
 
 # -----------------------------
@@ -108,13 +109,13 @@ async def process_document(file: UploadFile, db: Session, user_id: str):
         raise HTTPException(status_code=500, detail=f"Embedding failed: {str(e)}")
 
     # -----------------------------
-    # 7. Store in FAISS
+    # 7. Store embeddings in DB
     # -----------------------------
     try:
-        store_embeddings(file_id, chunks, embeddings)
+        store_embeddings(file_id, chunks, embeddings, db)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"FAISS storage failed: {str(e)}")
-
+        raise HTTPException(status_code=500, detail=f"Embedding storage failed: {str(e)}")
+    
     # -----------------------------
     # 8. Save metadata to DB
     # -----------------------------
