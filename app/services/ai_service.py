@@ -2,49 +2,32 @@ from typing import List
 import numpy as np
 
 from app.utils.embeddings import get_embedding
-from app.utils.vector_store_model import load_index
+from app.utils.vector_store_model import search_similar
 from app.core.cache import get_cache, set_cache
 from app.core.config import OPENAI_API_KEY
 from openai import OpenAI
 
 
 # -----------------------------
-# 🔹 Helper: Cosine Similarity
-# -----------------------------
-def cosine_similarity(a, b):
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
-
-
-# -----------------------------
 # 🔹 Retrieve Relevant Chunks
 # -----------------------------
-def retrieve_chunks(query: str, file_id: str, top_k: int = 5):
+def retrieve_chunks(query: str, file_id: str, db, top_k: int = 5):
     """
     1. Convert query to embedding
-    2. Search FAISS index
+    2. Search PostgreSQL vector store
     3. Return top matching chunks
     """
+    query_embedding = get_embedding(query)
+    results = search_similar(file_id, query_embedding, top_k, db)
 
-    query_vector = np.array(get_embedding(query)).astype("float32")
-
-    index, texts = load_index(file_id)
-
-    if index is None or texts is None:
+    if not results:
         raise ValueError("No index found for this document")
-
-    # FAISS search
-    distances, indices = index.search(np.array([query_vector]), top_k)
-
-    results = []
-    for idx in indices[0]:
-        if idx < len(texts):
-            results.append(texts[idx])
 
     return results
 
 
 # -----------------------------
-# 🔹 Generate Answer (Simple)
+# 🔹 Generate Answer
 # -----------------------------
 def generate_answer(query: str, context_chunks: List[str]) -> str:
     """
@@ -54,9 +37,9 @@ def generate_answer(query: str, context_chunks: List[str]) -> str:
         return "Error: OPENAI_API_KEY is not configured in the environment."
 
     context = "\n\n".join(context_chunks)
-    
+
     client = OpenAI(api_key=OPENAI_API_KEY)
-    
+
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -74,7 +57,7 @@ def generate_answer(query: str, context_chunks: List[str]) -> str:
 # -----------------------------
 # 🔹 Main Function
 # -----------------------------
-def answer_query(query: str, file_id: str):
+def answer_query(query: str, file_id: str, db):
     """
     Full pipeline:
     1. Check cache
@@ -85,9 +68,7 @@ def answer_query(query: str, file_id: str):
 
     cache_key = f"{file_id}:{query}"
 
-    # -----------------------------
     # 1. Check cache
-    # -----------------------------
     cached = get_cache(cache_key)
     if cached:
         return {
@@ -95,15 +76,11 @@ def answer_query(query: str, file_id: str):
             "source": "cache"
         }
 
-    # -----------------------------
     # 2. Retrieve chunks
-    # -----------------------------
     try:
-        chunks = retrieve_chunks(query, file_id)
+        chunks = retrieve_chunks(query, file_id, db)
     except Exception as e:
-        return {
-            "error": str(e)
-        }
+        return {"error": str(e)}
 
     if not chunks:
         return {
@@ -111,14 +88,10 @@ def answer_query(query: str, file_id: str):
             "source": "search"
         }
 
-    # -----------------------------
     # 3. Generate answer
-    # -----------------------------
     answer = generate_answer(query, chunks)
 
-    # -----------------------------
     # 4. Cache result
-    # -----------------------------
     set_cache(cache_key, answer)
 
     return {
