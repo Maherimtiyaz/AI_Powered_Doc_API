@@ -6,6 +6,7 @@ from app.models.user import User
 from app.schemas.user_schema import UserCreate, UserLogin
 from app.services.auth_service import register_user, login_user
 from app.core.security import hash_password, verify_password, create_token
+from app.core.security import hash_password, verify_password
 
 router = APIRouter()
 
