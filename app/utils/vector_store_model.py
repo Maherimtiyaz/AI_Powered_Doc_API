@@ -1,6 +1,6 @@
 import numpy as np
 from sqlalchemy.orm import Session
-from app.utils.vector_store_model import DocumentChunk
+from app.utils.document_chunk import DocumentChunk
 
 
 def store_embeddings(file_id: str, texts: list, embeddings: list, db: Session):
