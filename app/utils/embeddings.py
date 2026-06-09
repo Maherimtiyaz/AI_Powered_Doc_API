@@ -1,8 +1,9 @@
 from openai import OpenAI
 
-client = OpenAI()
+from openai import OpenAI
 
 def get_embeddings(texts: list[str]) -> list:
+    client = OpenAI()  # ✅ only runs when function is called
     response = client.embeddings.create(
         model="text-embedding-3-small",
         input=texts
