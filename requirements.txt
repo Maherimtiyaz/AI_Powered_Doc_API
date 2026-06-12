@@ -11,3 +11,4 @@ openai==2.31.0
 python-multipart==0.0.26
 gunicorn
 numpy==2.4.4
+email-validator==2.2.0

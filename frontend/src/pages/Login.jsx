@@ -98,26 +98,24 @@ export default function Login() {
     e.preventDefault();
     setError(''); setSuccess(''); setLoading(true);
 
-    try {
+try {
       if (mode === 'login') {
         const res = await axios.post(
-          `${API_BASE}/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+          `${API_BASE}/auth/login`,
+          { email, password }
         );
         if (res.data.access_token) {
           localStorage.setItem('token', res.data.access_token);
           navigate('/dashboard');
-        } else {
-          setError(res.data.error || 'Login failed. Check credentials.');
         }
       } else {
         const res = await axios.post(
-          `${API_BASE}/auth/register?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+          `${API_BASE}/auth/register`,
+          { email, password }
         );
         if (res.data.msg) {
           setSuccess('Account created! Signing you in...');
           setMode('login');
-        } else {
-          setError('Registration failed. Try again.');
         }
       }
     } catch (err) {
