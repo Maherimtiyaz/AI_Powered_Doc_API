@@ -26,7 +26,7 @@ if FRONTEND_URL:
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["https://ai-powered-doc-frontend.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,3 +40,4 @@ app.include_router(ai_router, prefix="/ai", tags=["AI"])
 @app.get("/")
 def root():
     return {"message": "API is running"}
+
